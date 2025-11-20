@@ -1,10 +1,12 @@
 package br.com.jvbarbosa.store.service;
 
 import br.com.jvbarbosa.store.controller.exception.ResourceNotFoundException;
-import br.com.jvbarbosa.store.model.Order;
-import br.com.jvbarbosa.store.model.User;
+import br.com.jvbarbosa.store.model.*;
+import br.com.jvbarbosa.store.repository.OrderItemRepository;
 import br.com.jvbarbosa.store.repository.OrderRepository;
+import br.com.jvbarbosa.store.repository.ProductRepository;
 import br.com.jvbarbosa.store.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,12 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
     public List<Order> findAll() {
         return orderRepository.findAll();
     }
@@ -29,6 +37,7 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
+    @Transactional
     public Order save(Order order){
         if (order.getMoment() == null) {
             order.setMoment(Instant.now());
@@ -40,6 +49,23 @@ public class OrderService {
 
         order.setClient(client);
 
-        return orderRepository.save(order);
+       Order savedOrder =  orderRepository.save(order);
+
+       for (OrderItem item : order.getItems()){
+           item.setOrder(savedOrder);
+           Product product = productRepository.findById(item.getProduct().getId())
+                   .orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
+
+           item.setPrice(product.getPrice());
+           item.setProduct(product);
+
+           orderItemRepository.save(item);
+       }
+
+       return savedOrder;
+    }
+
+    public void delete(Long id) {
+        orderRepository.deleteById(id);
     }
 }

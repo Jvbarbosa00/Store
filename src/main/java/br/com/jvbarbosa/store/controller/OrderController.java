@@ -4,7 +4,6 @@ import br.com.jvbarbosa.store.model.Order;
 import br.com.jvbarbosa.store.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,5 +36,14 @@ public class OrderController {
     public ResponseEntity<Order> createOrder(@RequestBody Order order){
         Order newOrder = orderService.save(order);
         return ResponseEntity.status(HttpStatus.CREATED).body(newOrder);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long id){
+        if (orderService.findById(id).isPresent()){
+            orderService.delete(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.noContent().build();
     }
 }
