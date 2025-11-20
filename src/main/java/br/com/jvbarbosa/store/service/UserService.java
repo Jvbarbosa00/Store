@@ -6,6 +6,7 @@ import br.com.jvbarbosa.store.service.exception.EmailAlreadyExistException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,8 +18,11 @@ public class UserService {
 
     public User save(User user){
         Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
-        if (existingUser.isPresent()){
-            throw new  EmailAlreadyExistException("The email " + user.getEmail() + "Already exist!");
+        if (existingUser.isPresent() && !existingUser.get().equals(user)){
+            throw new  EmailAlreadyExistException("The email " + user.getEmail() + " Already exist!");
+        }
+        if (user.getSignUpDate() == null) {
+            user.setSignUpDate(LocalDateTime.now());
         }
         return userRepository.save(user);
     }
