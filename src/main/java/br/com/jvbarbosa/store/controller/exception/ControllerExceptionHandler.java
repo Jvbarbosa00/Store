@@ -37,4 +37,17 @@ public class ControllerExceptionHandler {
 
         return ResponseEntity.status(status).body(err);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<StandardError> badRequest(IllegalArgumentException e, HttpServletRequest request){
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        StandardError err = new StandardError();
+        err.setStatus(status.value());
+        err.setError("Bad Request");
+        err.setMessage(e.getMessage());
+        err.setTimestamp(Instant.now());
+        err.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
+    }
 }

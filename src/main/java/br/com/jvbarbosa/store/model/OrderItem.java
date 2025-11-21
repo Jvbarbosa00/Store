@@ -51,4 +51,8 @@ public class OrderItem {
 
     public void setPrice(BigDecimal price) {
     }
+
+    public Double getSubTotal(){
+        return price * quantity;
+    }
 }

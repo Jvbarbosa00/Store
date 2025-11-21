@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class User {
     @JsonIgnore
     String password;
 
+    @CreationTimestamp
+    @Column(updatable = false)
     LocalDateTime signUpDate;
 
     @OneToMany(mappedBy = "client")

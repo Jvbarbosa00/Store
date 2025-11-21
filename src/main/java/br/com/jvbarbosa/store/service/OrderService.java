@@ -55,7 +55,14 @@ public class OrderService {
            item.setOrder(savedOrder);
            Product product = productRepository.findById(item.getProduct().getId())
                    .orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
+            if (product.getStock() >= item.getQuantity()){
+                int newStock = product.getStock() - item.getQuantity();
+                product.setStock(newStock);
 
+                productRepository.save(product);
+            } else {
+                throw new IllegalArgumentException("Insufficient stock for product: " + product.getName());
+            }
            item.setPrice(product.getPrice());
            item.setProduct(product);
 

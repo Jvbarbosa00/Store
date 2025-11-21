@@ -41,4 +41,12 @@ public class Order {
     @OneToMany(mappedBy = "id.order", cascade = CascadeType.ALL)
     private Set<OrderItem> items = new HashSet<>();
 
+    public Double getTotal(){
+        double sum = 0.0;
+        for (OrderItem item : items){
+            sum += item.getSubTotal();
+        }
+        return sum;
+    }
+
 }
