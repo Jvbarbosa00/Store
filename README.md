@@ -1,41 +1,44 @@
-# 🛒 Store Backend API
-
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
 ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
 
-API RESTful desenvolvida para o gerenciamento de um sistema de E-commerce. O projeto foca na integridade de dados, relacionamentos complexos entre entidades e tratamento de erros robusto.
+API RESTful desenvolvida para o gerenciamento de um sistema de E-commerce. O projeto foca na integridade de dados, regras de negócio reais (estoque, preços), relacionamentos complexos e documentação automática.
 
 ## 🚀 Tecnologias Utilizadas
 
-* **Java 17**
+* **Java 17+**
 * **Spring Boot 3** (Web, Data JPA)
 * **MySQL 8** (Banco de Dados Relacional)
+* **SpringDoc / Swagger** (Documentação da API)
 * **Lombok** (Redução de boilerplate code)
 * **Maven** (Gerenciamento de dependências)
 
 ## ⚙️ Funcionalidades
 
-* **Gerenciamento de Usuários e Produtos:** CRUD completo (Create, Read, Update, Delete).
+* **Gerenciamento de Entidades:** CRUD para Usuários, Produtos e Categorias.
+* **Categorização:** Produtos organizados por categorias (Relacionamento Muitos-para-Muitos).
 * **Sistema de Pedidos:**
     * Criação de pedidos vinculados a usuários existentes.
-    * Adição de múltiplos itens ao pedido.
-    * **Segurança de Preço:** O sistema busca o preço real do produto no banco de dados no momento da compra, ignorando valores enviados pelo cliente para evitar fraudes.
-    * Registro automático do momento da compra (`Instant`).
+    * **Baixa de Estoque:** Validação automática de disponibilidade e subtração do estoque ao confirmar o pedido.
+    * **Segurança de Preço:** O sistema utiliza o preço histórico do produto no momento da compra, prevenindo fraudes via JSON.
+    * **Cálculos Automáticos:** A API retorna campos calculados de `subTotal` (por item) e `total` (valor final do pedido).
 * **Tratamento Global de Erros:**
-    * Respostas JSON padronizadas para erros 404 (Resource Not Found) e 409 (Database/Conflict).
-* **Modelagem de Dados:**
-    * Relacionamento **Um-para-Muitos** (User -> Orders).
-    * Relacionamento **Muitos-para-Muitos** com atributos extras (Order -> OrderItem -> Product), utilizando chave composta (`@EmbeddedId`).
-    * Uso de **Enums** para status do pedido (Aguardando Pagamento, Pago, Enviado, etc.).
+    * Respostas JSON padronizadas para erros 400 (Bad Request - Estoque insuficiente), 404 (Not Found) e 409 (Conflict).
+* **Database Seeding:**
+    * População automática do banco de dados com usuários, produtos, categorias e pedidos de teste ao iniciar a aplicação.
+* **Documentação:**
+    * Interface Swagger UI interativa para testes e visualização de endpoints.
 
-## 🗄️ Modelo de Dados (ERD)
+## 🗄️ Modelo de Dados
 
 O banco de dados `store_db` é composto pelas seguintes tabelas principais:
 * `tb_users`: Clientes da loja.
+* `tb_categories`: Categorias dos produtos.
 * `tb_products`: Catálogo de produtos.
+* `tb_product_category`: Tabela de união (Produto <-> Categoria).
 * `tb_orders`: Cabeçalho dos pedidos.
-* `tb_order_item`: Tabela associativa que armazena os itens, quantidade e preço histórico.
+* `tb_order_item`: Tabela associativa com itens, quantidade, preço histórico e subtotais.
 
 ## 🛠️ Como Executar o Projeto
 
@@ -48,7 +51,7 @@ O banco de dados `store_db` é composto pelas seguintes tabelas principais:
 
 1. **Clone o repositório:**
    ```bash
-   git clone [https://github.com/seu-usuario/nome-do-repo.git](https://github.com/seu-usuario/nome-do-repo.git)
+   git clone [https://github.com/Jvbarbosa00/Store.git](https://github.com/Jvbarbosa00/Store.git)
    ```
 2. **Configure o Banco de Dados:**
    Crie um banco de dados no MySQL:
@@ -69,20 +72,29 @@ O banco de dados `store_db` é composto pelas seguintes tabelas principais:
 
 A API roda em `http://localhost:8080/api`.
 
-### Produtos
-* `GET /products` - Lista todos os produtos.
-* `GET /products/{id}` - Busca um produto por ID.
-* `POST /products` - Cria um novo produto.
+📘 Swagger UI (Documentação Interativa)
+Acesse a documentação completa e teste as requisições diretamente pelo navegador: 👉 http://localhost:8080/api/swagger-ui/index.html
 
-### Usuários
-* `GET /users` - Lista todos os usuários.
-* `POST /users` - Cria um novo usuário.
+### Principais Endpoints
 
-### Pedidos (Orders)
-* `GET /orders/{id}` - Busca um pedido e seus itens.
-* `POST /orders` - Cria um pedido.
+#### Categorias
+* **GET** `/categories` - Lista todas as categorias.
+* **GET** `/categories/{id}` - Busca categoria por ID.
 
-#### Exemplo de JSON para criar Pedido:
+#### Produtos
+* **GET** `/products` - Lista todos os produtos (com suas categorias).
+* **GET** `/products/{id}` - Busca um produto por ID.
+* **POST** `/products` - Cria um novo produto.
+
+#### Usuários
+* **GET** `/users` - Lista todos os usuários.
+* **POST** `/users` - Cria um novo usuário.
+
+#### Pedidos (Orders)
+* **GET** `/orders/{id}` - Busca um pedido completo (com itens e totais).
+* **POST** `/orders` - Cria um pedido (Valida estoque e preços).
+
+##### Exemplo de JSON para criar Pedido:
 ```json
 {
     "orderStatus": 1,
@@ -104,3 +116,8 @@ A API roda em `http://localhost:8080/api`.
         }
     ]
 }
+```
+🤝 Contribuindo
+Este projeto é para fins de estudo e portfólio. Sugestões e dicas são sempre bem-vindas!
+
+Desenvolvido por João Victor Barbosa.
