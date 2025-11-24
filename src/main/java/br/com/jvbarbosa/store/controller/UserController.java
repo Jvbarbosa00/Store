@@ -1,5 +1,8 @@
 package br.com.jvbarbosa.store.controller;
 
+import br.com.jvbarbosa.store.dto.UserCreateDTO;
+import br.com.jvbarbosa.store.dto.UserResponseDTO;
+import br.com.jvbarbosa.store.dto.mapper.UserMapper;
 import br.com.jvbarbosa.store.model.User;
 import br.com.jvbarbosa.store.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,36 +20,48 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User newUser = userService.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserCreateDTO createDTO) {
+        User userToSave = userMapper.toEntity(createDTO);
+
+        User savedUser = userService.save(userToSave);
+
+        UserResponseDTO responseDTO = userMapper.toDTO(savedUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUser(){
+    public ResponseEntity<List<UserResponseDTO>> getAllUser(){
         List<User> users = userService.findAll();
-        return ResponseEntity.ok(users);
+
+        List<UserResponseDTO> usersDTO = users.stream().map(user -> userMapper.toDTO(user)).toList();
+        return ResponseEntity.ok(usersDTO);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getByIdUsers(@PathVariable Long id){
+    public ResponseEntity<UserResponseDTO> getByIdUsers(@PathVariable Long id){
         Optional<User> userData = userService.findById(id);
 
-        return userData.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return userData.map(user -> ResponseEntity.ok(userMapper.toDTO(user)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody User userDetails) {
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable long id, @RequestBody UserCreateDTO userDTO) {
 
         return userService.findById(id).map(existingUser -> {
-            existingUser.setName(userDetails.getName());
-            existingUser.setEmail(userDetails.getEmail());
-            existingUser.setPassword(userDetails.getPassword());
+            existingUser.setName(userDTO.name());
+            existingUser.setEmail(userDTO.email());
+            existingUser.setPassword(userDTO.password());
 
             User updatedUser = userService.save(existingUser);
-            return ResponseEntity.ok(updatedUser);
+
+            UserResponseDTO responseDTO = userMapper.toDTO(updatedUser);
+            return ResponseEntity.ok(responseDTO);
         }).orElse(ResponseEntity.notFound().build());
     }
 
