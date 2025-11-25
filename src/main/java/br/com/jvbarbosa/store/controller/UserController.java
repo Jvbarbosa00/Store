@@ -39,6 +39,7 @@ public class UserController {
         List<User> users = userService.findAll();
 
         List<UserResponseDTO> usersDTO = users.stream().map(user -> userMapper.toDTO(user)).toList();
+
         return ResponseEntity.ok(usersDTO);
     }
 
