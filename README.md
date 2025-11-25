@@ -70,7 +70,7 @@ O banco de dados `store_db` é composto pelas seguintes tabelas principais:
    ```
    ## 🔌 Endpoints da API
 
-A API roda em `http://localhost:8080/api`.
+A API roda em `http://localhost:8080/store`.
 
 📘 Swagger UI (Documentação Interativa)
 Acesse a documentação completa e teste as requisições diretamente pelo navegador: 👉 http://localhost:8080/api/swagger-ui/index.html
