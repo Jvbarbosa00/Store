@@ -4,6 +4,7 @@ import br.com.jvbarbosa.store.model.User;
 import br.com.jvbarbosa.store.repository.UserRepository;
 import br.com.jvbarbosa.store.service.exception.EmailAlreadyExistException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public User save(User user){
         Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser.isPresent() && !existingUser.get().equals(user)){
@@ -24,6 +28,7 @@ public class UserService {
         if (user.getSignUpDate() == null) {
             user.setSignUpDate(LocalDateTime.now());
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 

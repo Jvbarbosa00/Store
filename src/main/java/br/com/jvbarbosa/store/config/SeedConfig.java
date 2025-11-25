@@ -7,6 +7,7 @@ import org.hibernate.annotations.Cascade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -30,37 +31,40 @@ public class SeedConfig implements CommandLineRunner {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public void run(String... args) throws Exception {
 
         User u1 = new User();
         u1.setName("João Barbosa");
         u1.setEmail("jv@example.com.br");
-        u1.setPassword("123Jv");
+        u1.setPassword(passwordEncoder.encode("123Jv"));
         u1.setSignUpDate(LocalDateTime.now());
 
         User u2 = new User();
         u2.setName("Sophia Salvador");
         u2.setEmail("soso@example.com.br");
-        u2.setPassword("123Soso");
+        u2.setPassword(passwordEncoder.encode("123Soso"));
         u2.setSignUpDate(LocalDateTime.now());
 
         User u3 = new User();
         u3.setName("Renato Neto");
         u3.setEmail("renato@example.com.br");
-        u3.setPassword("123Re");
+        u3.setPassword(passwordEncoder.encode("123Re"));
         u3.setSignUpDate(LocalDateTime.now());
 
         User u4 = new User();
         u4.setName("Amauri Silveira");
         u4.setEmail("maumau@example.com.br");
-        u4.setPassword("123Mau");
+        u4.setPassword(passwordEncoder.encode("123Mau"));
         u4.setSignUpDate(LocalDateTime.now());
 
         User u5 = new User();
         u5.setName("Diogo Garcia");
         u5.setEmail("dioguin@example.com.br");
-        u5.setPassword("123Diogo");
+        u5.setPassword(passwordEncoder.encode("123Dioguin"));
         u5.setSignUpDate(LocalDateTime.now());
 
         userRepository.saveAll(Arrays.asList(u1, u2, u3, u4, u5));
