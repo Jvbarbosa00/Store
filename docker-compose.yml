@@ -27,6 +27,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 12345678
       SPRING_JPA_HIBERNATE_DDL_AUTO: create
+      JWT_SECRET: 12345678
     depends_on:
       mysql-db:
         condition: service_healthy

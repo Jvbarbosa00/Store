@@ -33,7 +33,7 @@ public class User {
     @Column(updatable = false)
     LocalDateTime signUpDate;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Order> orders = new ArrayList<>();
 }
